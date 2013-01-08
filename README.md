@@ -11,5 +11,5 @@ usage
 -----
 
 * -A: Dump all databases as one large file.
-* -u <user>: use this user to runas (default: mysql)
-* <directory>: specify a directory where the backup is (default: CWD)
+* -u &lt;user&gt;: use this user to runas (default: mysql)
+* &lt;directory&gt;: specify a directory where the backup is (default: CWD)
