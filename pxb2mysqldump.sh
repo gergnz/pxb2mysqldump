@@ -64,7 +64,8 @@ if [ ! -d ${backupdir} ]; then
 fi
 
 ## Dump all the logs, config, etc, in a unique directory
-temp=`mktemp -d -p $backupdir`
+temp=`mktemp -d`
+chown ${runasuser} ${temp}
 
 ## Create a minimal my.cnf
 cat > $temp/my.cnf << EOF
