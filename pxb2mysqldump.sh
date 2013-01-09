@@ -90,7 +90,9 @@ EOF
 chown -R ${runasuser} ${backupdir}
 
 ## Start mysql
-mysqld_safe --defaults-file=${temp}/my.cnf
+mysqld_safe --defaults-file=${temp}/my.cnf &
+sleep 20
+## TODO: This could be varible time, but really it should be able to determine when mysqld is ready....
 
 ## Check that mysql has innodb
 have_innodb=$(mysql -S ${temp}/mysql.sock -NB -e "show variables like 'have_innodb'"|awk '{print $2}')
