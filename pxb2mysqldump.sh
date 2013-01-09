@@ -28,7 +28,6 @@ while getopts ":u:hA" opt; do
         usage
       fi
       runasuser=${OPTARG}
-      shift; shift
       ;;
     A)
       alldatabases=TRUE
@@ -46,6 +45,7 @@ while getopts ":u:hA" opt; do
 done
 
 ## Set the backupdir if supplied
+shift $(($OPTIND - 1))
 if [ -n "${1}" ]; then
   backupdir=${1}
 fi
