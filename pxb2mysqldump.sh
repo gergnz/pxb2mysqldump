@@ -82,7 +82,7 @@ skip-grant-tables
 user=$runasuser
 basedir=$backupdir
 [mysqld_safe]
-err-log=$temp/mysqld.log
+log-error=$temp/mysqld.log
 pid-file=$temp/mysqld.pid
 EOF
 
