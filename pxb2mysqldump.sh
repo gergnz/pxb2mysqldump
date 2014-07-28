@@ -5,7 +5,7 @@ set -e
 ## Print basic usage
 usage() {
   me=`basename $0`
-  echo "$me [-u username] [-A] [-h] [directory]"
+  echo "$me [-u username] [-A|-d database [-t table]] [-h] [directory]"
   exit 1
 }
 
@@ -21,7 +21,7 @@ runasuser='mysql'
 alldatabases=FALSE
 
 ## Grab the options, and setup variables
-while getopts ":u:hA" opt; do
+while getopts ":u:hAd:t:" opt; do
   case $opt in
     u)
       if [ -z "${OPTARG}" ]; then
@@ -29,7 +29,27 @@ while getopts ":u:hA" opt; do
       fi
       runasuser=${OPTARG}
       ;;
+    d)
+      # dump just this database
+      if [ -z "${OPTARG}" ]; then
+        usage
+      fi
+      databasetodump=${OPTARG}
+      ;;
+    t)
+      # requires database option
+      if [ -z "${databasetodump}" ]; then
+        usage
+      fi
+      if [ -z "${OPTARG}" ]; then
+        usage
+      fi
+      tabletodump=${OPTARG}
+      ;;
     A)
+      if [ -n "${databasetodump}" ]; then
+        usage
+      fi
       alldatabases=TRUE
       ;;
     h)
@@ -109,6 +129,14 @@ if [ "${alldatabases}" == "TRUE" ]; then
   echo "You can import this into an empty or alternative host with something like this:"
   echo "# Example:"
   echo "# zcat ${backupdir}/alldatabases.sql.gz | mysql -uroot -p "
+elif [ -z "${databasetodump}" ]; then
+  database=${databasetodump}
+  echo -n "Dumping $database to: $database.sql..."
+  mysqldump -S ${temp}/mysql.sock $database | gzip > ${backupdir}/${database}.sql.gz
+  echo "Done"
+  echo "You can import this into an instance with something like this:"
+  echo "# Example:"
+  echo "# zcat ${backupdir}/${database}.sql.gz | mysql -uroot -p $database"
 else 
   ## Just dump useful databases
   for database in $(mysql -S ${temp}/mysql.sock -BN -e "show databases"|grep -Ev 'mysql|test|information_schema'); do
